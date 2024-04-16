@@ -2,9 +2,9 @@ type lexresult = string
 fun eof () = "end"
 
 %%
-ids=[a-z]+;
+id=[a-zA-Z]+[a-zA-Z0-9]*;
 
 %%
-{ids} => (yytext);
+{id} => (yytext);
 " " => (continue());
 \n => (eof());

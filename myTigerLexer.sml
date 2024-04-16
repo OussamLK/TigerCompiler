@@ -1,5 +1,5 @@
 use "tiger.lex.sml";
-val strings = ref ["mustapha oussam larkem the third", " ", "darky", " ", "nassim"];
+val strings = ref ["mustapha23", "23a"];
 fun f n =
         case !strings of
             [] => "\n"
