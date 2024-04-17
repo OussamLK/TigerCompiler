@@ -8,9 +8,9 @@ id=[_a-zA-Z]+[a-zA-Z0-9]*;
 %s IN_COMMENT;
 
 %%
-("/*") => (altNesting(1); YYBEGIN IN_COMMENT; continue());
-<IN_COMMENT>(^("/*" | "\\*"))* => (continue());
-("*\\") => (altNesting(~1) ;  continue());
+"/*" => (altNesting(1); YYBEGIN IN_COMMENT; continue());
+<IN_COMMENT>[^("/*" | "*/")]* => (continue());
+<IN_COMMENT>"*/" => (altNesting(~1) ; if !nesting = 0 then YYBEGIN INITIAL else YYBEGIN IN_COMMENT;  continue());
 "type" => (Tokens.TYPE(yypos, yypos + size yytext));
 "var" => (Tokens.VAR(yypos, yypos + size yytext));
 "function" => (Tokens.FUNCTION(yypos, yypos + size yytext));
