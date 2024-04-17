@@ -3,10 +3,10 @@ use "tiger.lex.sml";
 
 
 
-val strings = ref ["let var N := 8 type intArray = array of int"];
+val strings = ref ["let\n", "var s = \"name\""];
 fun f n =
         case !strings of
-            [] => "\n"
+            [] => ""
             |h::t => let val _ = strings := t in let val _ = print("call returning: '"^h^"'\n") in h end end
 
 val lexer = Mlex.makeLexer(f);

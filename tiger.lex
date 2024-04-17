@@ -1,11 +1,16 @@
 type lexresult = Tokens.token;
-fun eof () = Tokens.EOF(0, 0)
+fun eof () = Tokens.EOF(0, 0);
+val nesting = ref 0;
+fun altNesting (n:int) = let val _ = nesting := !nesting + n in NONE end;
 
 %%
 id=[_a-zA-Z]+[a-zA-Z0-9]*;
+%s IN_COMMENT;
 
 %%
-
+("/*") => (altNesting(1); YYBEGIN IN_COMMENT; continue());
+<IN_COMMENT>(^("/*" | "\\*"))* => (continue());
+("*\\") => (altNesting(~1) ;  continue());
 "type" => (Tokens.TYPE(yypos, yypos + size yytext));
 "var" => (Tokens.VAR(yypos, yypos + size yytext));
 "function" => (Tokens.FUNCTION(yypos, yypos + size yytext));
@@ -46,11 +51,11 @@ id=[_a-zA-Z]+[a-zA-Z0-9]*;
 ";" => (Tokens.SEMICOLON(yypos, yypos + size yytext));
 ":" => (Tokens.COLON(yypos, yypos + size yytext));
 "," => (Tokens.COMMA(yypos, yypos + size yytext));
-"\"[a-zA-z ,.;:]*\"" => (Tokens.STRING(yytext, yypos, yypos + size yytext));
+\"[a-zA-Z]*\" => (Tokens.STRING(yytext, yypos, yypos+1));
+
 [0-9]+ => (case Int.fromString(yytext) of
                 SOME v => Tokens.INT(v ,yypos, yypos + size yytext)
                 |NONE => raise LexError);
 {id} => (Tokens.ID(yytext, yypos, yypos + size yytext));
 
-" " => (continue());
-\n => (eof());
+(" " | "\n") => (continue());
