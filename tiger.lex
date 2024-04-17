@@ -46,8 +46,10 @@ id=[_a-zA-Z]+[a-zA-Z0-9]*;
 ";" => (Tokens.SEMICOLON(yypos, yypos + size yytext));
 ":" => (Tokens.COLON(yypos, yypos + size yytext));
 "," => (Tokens.COMMA(yypos, yypos + size yytext));
-"string" => (Tokens.STRING(yypos, yypos + size yytext));
-"int" => (Tokens.INT(yypos, yypos + size yytext));
+"\"[a-zA-z ,.;:]*\"" => (Tokens.STRING(yytext, yypos, yypos + size yytext));
+[0-9]+ => (case Int.fromString(yytext) of
+                SOME v => Tokens.INT(v ,yypos, yypos + size yytext)
+                |NONE => raise LexError);
 {id} => (Tokens.ID(yytext, yypos, yypos + size yytext));
 
 " " => (continue());

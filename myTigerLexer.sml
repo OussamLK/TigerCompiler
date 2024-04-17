@@ -1,6 +1,9 @@
 use "resources/tokens.sml";
 use "tiger.lex.sml";
-val strings = ref ["type function something= "];
+
+
+
+val strings = ref ["let var N := 8 type intArray = array of int"];
 fun f n =
         case !strings of
             [] => "\n"
