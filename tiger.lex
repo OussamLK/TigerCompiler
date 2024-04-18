@@ -6,7 +6,7 @@ fun inc n = let val _ = n:= !n +1 in 0 end;
 fun altNesting (n:int) = let val _ = nesting := !nesting + n in NONE end;
 exception LexError
 val error = fn (text, pos, line) => let val [pos, line] = map Int.toString [pos, line] ;
-                                  val _ = print("error parsing: `"^text^"` at position: "^pos^" line: "^line^"\n") in
+                                  val _ = print("lexing error: `"^text^"` at position: "^pos^" line: "^line^"\n") in
                                   raise LexError end
 
 %%
