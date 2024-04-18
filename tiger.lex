@@ -1,7 +1,13 @@
 type lexresult = Tokens.token;
 fun eof () = Tokens.EOF(0, 0);
 val nesting = ref 0;
+val linecount = ref 1;
+fun inc n = let val _ = n:= !n +1 in 0 end;
 fun altNesting (n:int) = let val _ = nesting := !nesting + n in NONE end;
+exception LexError
+val error = fn (text, pos, line) => let val [pos, line] = map Int.toString [pos, line] ;
+                                  val _ = print("error parsing: `"^text^"` at position: "^pos^" line: "^line^"\n") in
+                                  raise LexError end
 
 %%
 id=[_a-zA-Z]+[a-zA-Z0-9]*;
@@ -29,13 +35,13 @@ id=[_a-zA-Z]+[a-zA-Z0-9]*;
 "if" => (Tokens.IF(yypos, yypos + size yytext));
 "array" => (Tokens.ARRAY(yypos, yypos + size yytext));
 ":=" => (Tokens.ASSIGN(yypos, yypos + size yytext));
-"or" => (Tokens.OR(yypos, yypos + size yytext));
-"and" => (Tokens.AND(yypos, yypos + size yytext));
+"|" => (Tokens.OR(yypos, yypos + size yytext));
+"&" => (Tokens.AND(yypos, yypos + size yytext));
 ">=" => (Tokens.GE(yypos, yypos + size yytext));
 ">" => (Tokens.GT(yypos, yypos + size yytext));
 "<=" => (Tokens.LE(yypos, yypos + size yytext));
 "<" => (Tokens.LT(yypos, yypos + size yytext));
-"!=" => (Tokens.NEQ(yypos, yypos + size yytext));
+"<>" => (Tokens.NEQ(yypos, yypos + size yytext));
 "=" => (Tokens.EQ(yypos, yypos + size yytext));
 "/" => (Tokens.DIVIDE(yypos, yypos + size yytext));
 "*" => (Tokens.TIMES(yypos, yypos + size yytext));
@@ -57,5 +63,6 @@ id=[_a-zA-Z]+[a-zA-Z0-9]*;
                 SOME v => Tokens.INT(v ,yypos, yypos + size yytext)
                 |NONE => raise LexError);
 {id} => (Tokens.ID(yytext, yypos, yypos + size yytext));
-
-(" " | "\n") => (continue());
+" " => (continue());
+"\n" => (inc linecount; continue());
+.=>(error(yytext, yypos, !linecount));

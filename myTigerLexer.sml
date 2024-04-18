@@ -3,7 +3,9 @@ use "tiger.lex.sml";
 
 
 
-val strings = ref ["let\n", "/*this is /* a nested comment */ a comment*/ var s = \"name\""];
+(* val strings = ref ["let\n", "/*this is /* a nested comment */ a comment*/ var s = \"name\""]; *)
+val strings = ref ["let\n", "var 3 ", "&"];
+
 fun f n =
         case !strings of
             [] => ""
